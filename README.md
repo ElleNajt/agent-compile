@@ -26,50 +26,31 @@ The design is intentionally minimal. The strict ambiguity checker will force you
 
 ### CLI (Recommended)
 
-1. Create a spec file (e.g., `my_spec.py`):
-
-```python
-from src.core import Module, Example
-
-calculator = Module(
-    name="calculator",
-    purpose="""A calculator that performs basic arithmetic operations.
-    
-Takes two numbers (a, b) and an operation string.
-Operations: 'add', 'subtract', 'multiply', 'divide'
-Returns the result as a float.
-Raises ValueError for invalid operations.
-Raises ZeroDivisionError when dividing by zero.""",
-    tests=[
-        Example(
-            inputs={"a": 10, "b": 5, "operation": "add"},
-            outputs={"result": 15.0},
-            description="Addition"
-        ),
-        Example(
-            inputs={"a": 10, "b": 5, "operation": "divide"},
-            outputs={"result": 2.0},
-            description="Division"
-        )
-    ]
-)
-```
-
-2. Compile it:
-
 ```bash
-python -m src.cli.compile my_spec.py
-# Compiled code is saved to compiled_src/calculator.py
+python -m src.cli.compile examples/calculator/spec.py --output-dir examples/calculator/compiled_src
 ```
 
 The CLI will:
-- Load all `Module` objects from your file
-- Check for ambiguities
-- Generate code and save to `compiled_src/` (by default)
+- Load all `Module` objects from your spec file
+- Check for ambiguities (strict but not pedantic)
+- Generate code, tests, and logs in the output directory
+- Claude iteratively writes code, runs tests, and fixes failures
 
 Options:
-- `--output-dir DIR`: Custom output directory
+- `--output-dir DIR`: Custom output directory (default: `compiled_src/` next to spec file)
 - `--force`: Skip ambiguity checking
+
+## Examples
+
+See `examples/` directory:
+
+- **calculator/** - Simple single-module example
+- **data_processor/** - Complex multi-module pipeline with dependencies
+
+Each example includes:
+- `spec.py` - Module specifications
+- `README.md` - Example documentation
+- `compiled_src/` - Generated code (after compilation)
 
 ### Programmatic API
 
