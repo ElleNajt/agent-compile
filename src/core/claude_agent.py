@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Claude agent implementation using claude CLI subprocess."""
 
+import shlex
 import subprocess
 from pathlib import Path
 
@@ -16,7 +17,7 @@ class ClaudeAgent(Agent):
 
         Args:
             command: Command to run (default: "claude")
-                    Can be "claudebox" or other containerized commands
+                    Can include arguments: "claudebox -p" for containerized execution
         """
         self.command = command
 
@@ -34,9 +35,12 @@ class ClaudeAgent(Agent):
         Returns:
             Claude's final response
         """
+        # Parse command string into list (handles arguments like "claudebox -p")
+        cmd_list = shlex.split(self.command)
+
         # Run claude/claudebox with the prompt via stdin
         result = subprocess.run(
-            [self.command],
+            cmd_list,
             input=prompt,
             cwd=cwd,
             capture_output=True,

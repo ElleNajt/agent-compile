@@ -126,7 +126,7 @@ def main():
         "--claude-command",
         type=str,
         default="claude",
-        help="Command to run Claude (default: 'claude', can use 'claudebox' for containerized execution)",
+        help="Command to run Claude (default: 'claude', can use 'claudebox -p' for containerized execution)",
     )
 
     args = parser.parse_args()
