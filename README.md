@@ -134,10 +134,12 @@ Use agent-compile when:
 
 ## Key principles
 
-- **Never manually edit compiled code** - edit the spec instead and recompile
+- **Prefer editing the spec over compiled code** - when you need changes, update the spec and recompile
 - **Be specific in the purpose** - vague specs lead to ambiguous compilation
 - **Use natural language tests** - describe behavior clearly
-- **Commit the spec, not necessarily the compiled code** - others can regenerate it
+- **Commit both spec and compiled code** - compilation isn't deterministic enough yet to rely on regeneration
+
+**Future goal**: Make compilation deterministic enough that only specs need to be committed, but we're not there yet.
 
 ## Decompiling existing code
 
