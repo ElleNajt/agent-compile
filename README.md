@@ -74,6 +74,8 @@ Each example includes:
 - `README.md` - Example documentation
 - `compiled_src/` - Generated code (after compilation)
 
+**Meta-circular example**: [`src/spec.py`](src/spec.py) - The spec for agent-compile itself! Defines all 9 modules (agent, claude_agent, module, ambiguity, cache, compiler, decompiler, compile_cli, decompile_cli). This spec can be used to recompile the system from scratch.
+
 ### Workflow
 
 **Forward (Spec → Code):**
