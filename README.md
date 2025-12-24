@@ -222,13 +222,10 @@ python -m src.cli.compile examples/calculator/spec.py --claude-command "claudebo
   - Prevents accidental modification of "done" code
   - Ties frozen state to version control instead of internal checksums
 
-### Containerization
-- Compilation and test running should happen in a docker container.
-
-### Decompiling
-- Calling claude on an existing project to make a spec.
+### Deterministic Compilation
+- Make compilation deterministic so only specs need to be committed
+- Currently compilation can vary between runs, so both spec and code should be committed
 
 ### Other Future Features
-- Caching: Avoid recompiling unchanged specs
-- Testing integration: Auto-generate tests from examples
-- Multi-language support: Compile to languages beyond Python
+- Caching: Avoid recompiling unchanged specs (basic cache exists, needs improvement)
+- Better multi-language support: Currently Python/Rust/JavaScript templates exist, expand further
