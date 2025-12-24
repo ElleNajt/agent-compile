@@ -6,7 +6,7 @@ import importlib.util
 import sys
 from pathlib import Path
 
-from src.core import CompilationResult, LLMCompiler, Ambiguity
+from src.core import Ambiguity, CompilationResult, LLMCompiler
 from src.core.cache import AmbiguityCache
 
 
@@ -28,7 +28,12 @@ def load_modules_from_file(filepath: Path) -> list:
     return modules
 
 
-def compile_file(filepath: Path, output_dir: Path, force: bool = False):
+def compile_file(
+    filepath: Path,
+    output_dir: Path,
+    force: bool = False,
+    claude_command: str = "claude",
+):
     """Compile modules from a file."""
     print(f"Loading modules from {filepath}...")
 
@@ -41,14 +46,17 @@ def compile_file(filepath: Path, output_dir: Path, force: bool = False):
     print(f"Found {len(modules)} module(s): {', '.join(m.name for m in modules)}")
 
     # Create compiler with cwd set to output directory
-    compiler = LLMCompiler(cwd=output_dir)
+    from src.core import ClaudeAgent
+
+    agent = ClaudeAgent(command=claude_command)
+    compiler = LLMCompiler(agent=agent, cwd=output_dir)
 
     # Phase 1: Check ALL modules for ambiguities first
     if not force:
         print("\nPhase 1: Checking all modules for ambiguities...")
         cache = AmbiguityCache(output_dir)
         all_ambiguities = {}
-        
+
         for module in modules:
             # Check cache first
             cached = cache.get(module)
@@ -65,7 +73,7 @@ def compile_file(filepath: Path, output_dir: Path, force: bool = False):
                 cache.set(module, ambiguities)
                 if ambiguities:
                     all_ambiguities[module.name] = ambiguities
-        
+
         # If any module has ambiguities, report all and abort
         if all_ambiguities:
             print(f"\n❌ Found ambiguities in {len(all_ambiguities)} module(s):\n")
@@ -74,7 +82,7 @@ def compile_file(filepath: Path, output_dir: Path, force: bool = False):
                 for amb in ambiguities:
                     print(f"  {amb}\n")
             return 1
-        
+
         print("✅ All modules passed ambiguity checks\n")
 
     # Phase 2: Compile all modules (now we know they're all unambiguous)
@@ -94,7 +102,9 @@ def compile_file(filepath: Path, output_dir: Path, force: bool = False):
             if output_file.exists():
                 print(f"✅ {module.name} compiled successfully → {output_file}")
             else:
-                print(f"⚠️  {module.name} compilation finished but file not found at {output_file}")
+                print(
+                    f"⚠️  {module.name} compilation finished but file not found at {output_file}"
+                )
 
     return 0
 
@@ -112,6 +122,12 @@ def main():
         help="Output directory (default: compiled_src/ in same directory as input file)",
     )
     parser.add_argument("--force", action="store_true", help="Skip ambiguity checking")
+    parser.add_argument(
+        "--claude-command",
+        type=str,
+        default="claude",
+        help="Command to run Claude (default: 'claude', can use 'claudebox' for containerized execution)",
+    )
 
     args = parser.parse_args()
 
@@ -130,7 +146,9 @@ def main():
     output_dir.mkdir(exist_ok=True)
 
     # Compile
-    return compile_file(args.file, output_dir, force=args.force)
+    return compile_file(
+        args.file, output_dir, force=args.force, claude_command=args.claude_command
+    )
 
 
 if __name__ == "__main__":

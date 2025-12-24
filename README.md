@@ -42,6 +42,7 @@ The CLI will:
 Options:
 - `--output-dir DIR`: Custom output directory (default: `compiled_src/` next to spec file)
 - `--force`: Skip ambiguity checking
+- `--claude-command CMD`: Command to run Claude (default: `claude`, use `claudebox` for containerized execution)
 
 ## Examples
 
@@ -89,6 +90,26 @@ elif result.status == "compiled":
 5. Get working, tested code in `compiled_src/`
 
 The key insight: You collaborate with Claude Code on the **spec**, then the compiler generates **code** from that spec.
+
+## Containerization
+
+For security and isolation, you can run compilation in a Docker container using a containerized Claude command:
+
+```bash
+# Using claudebox (or any other containerized Claude command)
+python -m src.cli.compile examples/calculator/spec.py --claude-command claudebox
+```
+
+**Benefits:**
+- Isolation: Code generation and testing happen in a sandboxed environment
+- Security: Prevents generated code from accessing your host system
+- Reproducibility: Consistent environment for all compilations
+
+**Requirements:**
+- Your containerized command (e.g., `claudebox`) must:
+  - Accept prompts via stdin
+  - Have access to the compilation working directory
+  - Support Claude Code's agentic features (file writing, bash execution, etc.)
 
 ## Design Principles
 
