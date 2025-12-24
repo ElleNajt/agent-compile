@@ -12,6 +12,7 @@ class Decompiler:
     Decompiles existing code into Module specifications.
 
     Takes a directory of code and generates a spec.py file with Module definitions.
+    Iteratively refines the spec until it passes ambiguity checking.
     """
 
     def __init__(self, agent: Agent | None = None):
@@ -31,7 +32,7 @@ class Decompiler:
             code_dir: Directory containing code to decompile
 
         Returns:
-            Python code defining Module specifications
+            Python code defining Module specifications (unambiguous)
         """
         # Gather all code files
         code_files = self._gather_code_files(code_dir)
@@ -40,9 +41,10 @@ class Decompiler:
             raise ValueError(f"No code files found in {code_dir}")
 
         # Build prompt for LLM to analyze code and generate spec
+        # The prompt instructs Claude to iteratively check for ambiguities
         prompt = self._build_decompile_prompt(code_files)
 
-        # Get spec from LLM
+        # Get spec from LLM (Claude will iterate internally until unambiguous)
         spec_code = self.agent.query(prompt, cwd=code_dir)
 
         return spec_code
@@ -83,12 +85,14 @@ Your task:
 1. Analyze the code to understand its purpose and behavior
 2. Identify the main modules/components (there may be one or multiple)
 3. Generate a spec.py file with Module definitions
+4. Check the generated spec for ambiguities using the same criteria as the compiler's ambiguity checker
+5. Iteratively refine the spec until it would pass ambiguity checking
 
 For each Module you should specify:
 - name: The module name (infer from code structure)
-- purpose: High-level description of what it does (2-3 sentences)
+- purpose: High-level description of what it does (2-3 sentences, be SPECIFIC)
 - dependencies: List of other Modules it depends on (if any)
-- tests: Natural language test descriptions (infer from code behavior, edge cases, etc.)
+- tests: Natural language test descriptions (comprehensive, covering functionality and edge cases)
 
 Output format:
 ```python
@@ -109,12 +113,20 @@ module_name = Module(
 )
 ```
 
-IMPORTANT:
-- Infer the purpose from the code implementation
-- Generate comprehensive test descriptions covering main functionality and edge cases
-- If multiple modules exist, identify dependencies between them
-- Focus on WHAT the code does, not HOW it's implemented
-- Tests should describe expected behavior, not implementation details
+IMPORTANT - Avoid Ambiguities:
+- Purpose must be SPECIFIC enough that implementation is clear
+- Tests must cover all main functionality and edge cases
+- If purpose mentions behavior, tests should verify that behavior
+- No contradictions between purpose and tests
+- Include enough detail that someone could implement correctly from the spec alone
 
-Generate the complete spec.py file:
+ITERATION INSTRUCTIONS:
+1. Generate initial spec
+2. Review it for ambiguities (missing details, contradictions, vague descriptions)
+3. If ambiguities found, refine and repeat
+4. Only output the final unambiguous spec
+
+Focus on WHAT the code does, not HOW it's implemented.
+
+Generate the complete, unambiguous spec.py file:
 """
