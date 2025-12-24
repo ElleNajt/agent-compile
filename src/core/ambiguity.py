@@ -43,15 +43,11 @@ class AmbiguityChecker:
     def _build_ambiguity_check_prompt(self, module: Module) -> str:
         tests_str = ""
         if module.tests:
-            tests_str = "\n\nTests/Examples:\n"
+            tests_str = "\n\nTests:\n"
             for i, test in enumerate(module.tests, 1):
-                tests_str += f"\nTest {i}:"
-                if test.description:
-                    tests_str += f" {test.description}"
-                tests_str += f"\n  Inputs: {test.inputs}"
-                tests_str += f"\n  Expected Outputs: {test.outputs}"
+                tests_str += f"\n{i}. {test}"
         else:
-            tests_str = "\n\nTests/Examples: (none provided)"
+            tests_str = "\n\nTests: (none provided)"
 
         deps_str = (
             "\n".join(f"  - {dep.name}: {dep.purpose}" for dep in module.dependencies)

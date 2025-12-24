@@ -116,25 +116,32 @@ class LLMCompiler:
         try:
             # Query agent with cwd - Claude will write files directly
             response = self.agent.query(prompt, cwd=self.cwd)
-            
+
             # Save compilation log (success case)
             self._save_log(module, prompt, response, success=True)
 
             return response.strip()
-            
+
         except Exception as e:
             # Save compilation log (failure case)
             self._save_log(module, prompt, str(e), success=False, error=e)
             raise
-    
-    def _save_log(self, module: Module, prompt: str, response: str, success: bool, error: Exception = None):
+
+    def _save_log(
+        self,
+        module: Module,
+        prompt: str,
+        response: str,
+        success: bool,
+        error: Exception = None,
+    ):
         """Save compilation log."""
         if not self.cwd:
             return
-            
+
         log_file = self.cwd / f"COMPILE_{module.name}.log"
         status = "SUCCESS" if success else "FAILED"
-        
+
         log_content = f"""Compilation Log for {module.name}
 {"=" * 60}
 Status: {status}
@@ -152,7 +159,7 @@ Prompt Sent to Claude:
 {prompt}
 
 """
-        
+
         if success:
             log_content += f"""Claude's Response:
 {"-" * 60}
@@ -163,12 +170,12 @@ Prompt Sent to Claude:
 {"-" * 60}
 {type(error).__name__}: {str(error)}
 """
-        
+
         log_content += f"""
 {"-" * 60}
 End of compilation log
 """
-        
+
         log_file.write_text(log_content)
 
     def _build_code_generation_prompt(
@@ -176,16 +183,12 @@ End of compilation log
     ) -> str:
         """Build the prompt for code generation."""
 
-        # Format tests/examples
+        # Format tests
         tests_str = ""
         if module.tests:
             tests_str = "\n\nTests (your code must pass these):\n"
             for i, test in enumerate(module.tests, 1):
-                tests_str += f"\nTest {i}:"
-                if test.description:
-                    tests_str += f" {test.description}"
-                tests_str += f"\n  Inputs: {test.inputs}"
-                tests_str += f"\n  Expected Outputs: {test.outputs}"
+                tests_str += f"\n{i}. {test}"
 
         # Format dependency code
         deps_str = ""

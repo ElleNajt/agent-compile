@@ -1,6 +1,6 @@
 """Example: Data processing pipeline with multiple dependent modules."""
 
-from src.core import Module, Example
+from src.core import Module
 
 # Module 1: CSV reader
 csv_reader = Module(
@@ -13,15 +13,11 @@ Handles missing values by setting them to None.
 Raises FileNotFoundError if file doesn't exist.
 Raises ValueError if CSV is malformed.""",
     tests=[
-        Example(
-            inputs={"filepath": "test_data.csv"},
-            outputs={"data": [
-                {"name": "Alice", "age": 30, "city": "NYC"},
-                {"name": "Bob", "age": 25, "city": "SF"}
-            ]},
-            description="Read valid CSV"
-        )
-    ]
+        "Read valid CSV: read_csv('test_data.csv') should return list of dicts with keys matching CSV headers",
+        "Missing file: read_csv('nonexistent.csv') should raise FileNotFoundError",
+        "Malformed CSV: read_csv('bad.csv') with inconsistent columns should raise ValueError",
+        "Empty values: CSV with empty cells should have None for those fields in the output dicts",
+    ],
 )
 
 # Module 2: Data validator (depends on csv_reader structure)
@@ -29,31 +25,17 @@ data_validator = Module(
     name="data_validator",
     purpose="""Validate data records according to schema rules.
     
-Takes a list of dictionaries and validation rules.
+Takes a list of dictionaries and validation rules dictionary.
+Validation rules use Python type objects: {"name": str, "age": int}
 Returns tuple of (valid_records, invalid_records).
-Validation rules specify required fields and type constraints.
-Example rule: {"name": str, "age": int}""",
+A record is valid if all required fields exist and match their type constraints.""",
     dependencies=[csv_reader],
     tests=[
-        Example(
-            inputs={
-                "data": [
-                    {"name": "Alice", "age": 30},
-                    {"name": "Bob", "age": "invalid"},
-                    {"name": None, "age": 25}
-                ],
-                "rules": {"name": "str", "age": "int"}
-            },
-            outputs={
-                "valid": [{"name": "Alice", "age": 30}],
-                "invalid": [
-                    {"name": "Bob", "age": "invalid"},
-                    {"name": None, "age": 25}
-                ]
-            },
-            description="Validate mixed data"
-        )
-    ]
+        "Valid records: validate([{'name': 'Alice', 'age': 30}], {'name': str, 'age': int}) should return ([{'name': 'Alice', 'age': 30}], [])",
+        "Invalid types: validate([{'name': 'Bob', 'age': 'invalid'}], {'name': str, 'age': int}) should put Bob in invalid list",
+        "Missing required fields: validate([{'name': None, 'age': 25}], {'name': str, 'age': int}) should put this record in invalid list since name is None",
+        "Mixed data: validate with mix of valid/invalid should correctly separate them into two lists",
+    ],
 )
 
 # Module 3: Data aggregator (depends on validator)
@@ -67,23 +49,9 @@ Groups by specified categorical field if provided.
 Returns dictionary of aggregation results.""",
     dependencies=[csv_reader, data_validator],
     tests=[
-        Example(
-            inputs={
-                "data": [
-                    {"category": "A", "value": 10},
-                    {"category": "A", "value": 20},
-                    {"category": "B", "value": 15}
-                ],
-                "group_by": "category",
-                "aggregations": {"value": ["sum", "average"]}
-            },
-            outputs={
-                "results": {
-                    "A": {"value_sum": 30, "value_average": 15.0},
-                    "B": {"value_sum": 15, "value_average": 15.0}
-                }
-            },
-            description="Group and aggregate"
-        )
-    ]
+        "Group and aggregate: aggregate([{'category': 'A', 'value': 10}, {'category': 'A', 'value': 20}, {'category': 'B', 'value': 15}], group_by='category', aggregations={'value': ['sum', 'average']}) should return {'A': {'value_sum': 30, 'value_average': 15.0}, 'B': {'value_sum': 15, 'value_average': 15.0}}",
+        "No grouping: aggregate without group_by should aggregate all records together",
+        "Multiple aggregations: should support count, sum, average, min, max on numeric fields",
+        "Empty data: aggregate([]) should return empty results dict",
+    ],
 )
