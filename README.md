@@ -2,14 +2,22 @@
 
 A system for compiling structured prompts into executable code.
 
+## Philosophy
+
+**The problem with "vibe coding"**: When you collaborate with AI agents to generate code, it's easy to produce hundreds of lines quickly. But the *intent* gets lost in implementation details. Someone (including future-you) looking at the code has to reverse-engineer what you were trying to build. Collaboration becomes difficult: reviewing AI-generated code means reading all of it to understand the design decisions.
+
+**The proposed solution**: Treat the specification as the primary artifact, not the code. The spec captures *what* you're building and *why*. The code is just compiled output that can be regenerated.
+
+You still collaborate with AI to build things, but you collaborate on the *spec*. The ambiguity checker acts as a forcing function—it won't let you proceed until your intent is clear. Once the spec is unambiguous, compilation is deterministic. The spec becomes your communication layer for code review, collaboration, and maintenance.
+
 ## Concept
 
-Instead of chatting back-and-forth with an AI agent, you define what you want as a structured specification, and the agent compiles it to working code. You can work with an agent to build the spec. You can also decompile existing projects into specs that you can edit.
+Instead of chatting back-and-forth with an AI agent to generate code directly, you define what you want as a structured specification, and the agent compiles it to working code. You can work with an agent to build the spec. You can also decompile existing projects into specs that you can edit and improve.
 
 ## Key Components
 
 ### Module
-A `Module` is a minimal high-level specification of what code should do:
+A `Module` is a python Dataclass that minimal high-level specification of what code should do:
 - **name**: Identifier for the module
 - **purpose**: High-level intent in natural language (be specific!)
 - **dependencies**: Other modules this depends on
