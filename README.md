@@ -17,7 +17,7 @@ Instead of chatting back-and-forth with an AI agent to generate code directly, y
 ## Key Components
 
 ### Module
-A `Module` is a python Dataclass that minimal high-level specification of what code should do:
+A `Module` is a python dataclass that is a minimal high-level specification of what code should do:
 - **name**: Identifier for the module
 - **purpose**: High-level intent in natural language (be specific!)
 - **dependencies**: Other modules this depends on
