@@ -63,11 +63,11 @@ Options:
 
 ## Examples
 
-See `examples/` directory:
+See [`examples/`](examples/) directory:
 
-- **calculator/** - Simple single-module example (basic arithmetic)
-- **data_processor/** - Multi-module pipeline with dependencies (CSV → validation → aggregation)
-- **ml_classifier/** - System-level modules (complete ML pipeline, not just functions)
+- **[calculator/](examples/calculator/)** - Simple single-module example (basic arithmetic)
+- **[data_processor/](examples/data_processor/)** - Multi-module pipeline with dependencies (CSV → validation → aggregation)
+- **[ml_classifier/](examples/ml_classifier/)** - System-level modules (complete ML pipeline, not just functions)
 
 Each example includes:
 - `spec.py` - Module specifications
