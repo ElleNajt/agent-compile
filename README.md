@@ -81,78 +81,17 @@ Options:
 
 ## Using with Claude Code
 
-If you use [Claude Code](https://claude.com/claude-code), add these instructions to your project's `CLAUDE.md` file to help Claude understand the agent-compile workflow:
+If you use [Claude Code](https://claude.com/claude-code), you can add agent-compile workflow instructions to your project's `CLAUDE.md` file to teach Claude about the spec-first workflow.
 
-```markdown
-# Agent-Compile Workflow
+**Quick setup**: Copy or symlink [`CLAUDE_example.md`](CLAUDE_example.md) to your project as `CLAUDE.md`.
 
-This project uses agent-compile for spec-driven development. The spec is the source of truth, code is compiled output.
+The example file covers:
+- When to use agent-compile
+- Workflow steps (create spec → compile → review → iterate)
+- Key principles (never edit compiled code, always work through specs)
+- Commands (`agent-compile` and `agent-decompile`)
 
-## When to use agent-compile
-
-Use agent-compile when:
-- Building a new module or feature from scratch
-- You want the implementation to be reproducible from a clear specification
-- You want to collaborate on design (via specs) rather than implementation details
-
-## Workflow
-
-1. **Create a spec file** (e.g., `spec.py`):
-   ```python
-   from src.core import Module
-   
-   my_module = Module(
-       name="my_module",
-       purpose="Clear, specific description of what this module does...",
-       tests=[
-           "Test case 1: specific behavior to verify",
-           "Test case 2: edge case handling",
-       ],
-       language="python"  # or "rust", "javascript", etc.
-   )
-   ```
-
-2. **Compile the spec**:
-   ```bash
-   python -m src.cli.compile spec.py --output-dir compiled_src/
-   ```
-
-3. **Review the compiled code**:
-   - Check `compiled_src/` for generated implementation and tests
-   - Review `COMPILE_*.log` files to see compilation process
-   - Verify tests pass
-
-4. **If compilation fails** (ambiguities detected):
-   - Read the ambiguity feedback
-   - Refine the spec to be more specific
-   - Re-compile
-
-5. **If you need to modify**:
-   - Edit the **spec** (not the compiled code)
-   - Re-compile to regenerate code
-   - The compiled code is throwaway - the spec is the source of truth
-
-## Key principles
-
-- **Never manually edit compiled code** - always edit the spec and recompile
-- **Be specific in the purpose** - vague specs lead to ambiguous compilation
-- **Use natural language tests** - describe behavior clearly
-- **Commit both spec and compiled code** - for now, commit both (compilation not yet deterministic)
-
-**Note**: The workflow is spec-first (edit spec → recompile), but we still commit the compiled code since compilation can vary between runs. Future goal: make compilation deterministic enough that only specs need to be committed.
-
-## Decompiling existing code
-
-If you have existing code you want to spec-ify:
-
-```bash
-python -m src.cli.decompile src/ --output spec.py
-```
-
-This generates a spec from your code that you can refine and re-compile.
-```
-
-Add this to your `CLAUDE.md` and Claude Code will understand how to work with specs instead of directly writing implementation code.
+This teaches Claude to collaborate on specs rather than directly writing implementation code.
 
 ## Examples
 
