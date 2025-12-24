@@ -13,9 +13,11 @@ A `Module` is a minimal high-level specification of what code should do:
 - **name**: Identifier for the module
 - **purpose**: High-level intent in natural language (be specific!)
 - **dependencies**: Other modules this depends on
-- **tests**: Input/output examples that double as tests
+- **tests**: Natural language descriptions of expected behavior
 
 The design is intentionally minimal. The strict ambiguity checker will force you to make the purpose and tests specific enough that compilation is unambiguous.
+
+**Note**: Tests are flexible natural language - not rigid input/output pairs. Describe behavior however makes sense for your module.
 
 ### Two-Pass Compilation
 
@@ -44,20 +46,31 @@ Options:
 
 See `examples/` directory:
 
-- **calculator/** - Simple single-module example
-- **data_processor/** - Complex multi-module pipeline with dependencies
+- **calculator/** - Simple single-module example (basic arithmetic)
+- **data_processor/** - Multi-module pipeline with dependencies (CSV → validation → aggregation)
+- **ml_classifier/** - System-level modules (complete ML pipeline, not just functions)
 
 Each example includes:
 - `spec.py` - Module specifications
 - `README.md` - Example documentation
 - `compiled_src/` - Generated code (after compilation)
 
+**Progression**: calculator (single function) → data_processor (function pipeline) → ml_classifier (complete systems)
+
 ### Programmatic API
 
 ```python
-from src.core import Module, Example, LLMCompiler
+from src.core import Module, LLMCompiler
 
-calculator = Module(...)
+calculator = Module(
+    name="calculator",
+    purpose="Performs basic arithmetic operations",
+    tests=[
+        "Addition: calculate(10, 5, 'add') returns 15",
+        "Division by zero raises ZeroDivisionError"
+    ]
+)
+
 compiler = LLMCompiler()
 result = compiler.compile(calculator)
 
