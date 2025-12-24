@@ -4,7 +4,7 @@ A system for compiling structured prompts into executable code.
 
 ## Concept
 
-Instead of chatting back-and-forth with an AI agent, you define what you want as a structured specification (`Module`), and the agent compiles it to working code.
+Instead of chatting back-and-forth with an AI agent, you define what you want as a structured specification (`Module`), and the agent compiles it to working code. You can work with an agent to build the spec. You can also decompile existing projects into specs that you can edit.
 
 ## Key Components
 
@@ -27,7 +27,7 @@ The "compilers" ambiguity checker will force you to make the purpose and tests s
 
 ## Usage
 
-### CLI (Recommended)
+### Compile: Spec → Code
 
 ```bash
 python -m src.cli.compile examples/calculator/spec.py --output-dir examples/calculator/compiled_src
@@ -43,6 +43,23 @@ Options:
 - `--output-dir DIR`: Custom output directory (default: `compiled_src/` next to spec file)
 - `--force`: Skip ambiguity checking
 - `--claude-command CMD`: Command to run Claude (default: `claude`, can use `claudebox -p` for containerized execution)
+
+### Decompile: Code → Spec
+
+```bash
+python -m src.cli.decompile examples/calculator/compiled_src --output spec.py
+```
+
+The decompile CLI will:
+- Analyze existing code files in the directory
+- Use Claude to infer purpose, behavior, and test cases
+- Generate a `spec.py` file with `Module` definitions
+
+Options:
+- `--output FILE`: Output spec file (default: `spec.py` in code directory)
+- `--claude-command CMD`: Command to run Claude (default: `claude`)
+
+**Use case**: Extract specifications from existing codebases to refine or re-compile them
 
 ## Examples
 
@@ -83,13 +100,20 @@ elif result.status == "compiled":
 
 ### Workflow
 
+**Forward (Spec → Code):**
 1. Write a minimal spec (name + purpose) in a `.py` file
 2. Run compiler → identifies ambiguities
 3. Work with Claude Code to refine the spec - add tests, clarify purpose
 4. Re-run compiler → repeat until no ambiguities
 5. Get working, tested code in `compiled_src/`
 
-The key insight: You collaborate with Claude Code on the **spec**, then the compiler generates **code** from that spec.
+**Reverse (Code → Spec):**
+1. Point decompiler at existing code directory
+2. Claude analyzes the code and generates spec
+3. Refine the generated spec as needed
+4. Re-compile to update implementation
+
+The key insight: You collaborate with Claude Code on the **spec**, then the compiler generates **code** from that spec. The decompiler lets you extract specs from existing code.
 
 ## Containerization
 
@@ -132,6 +156,9 @@ python -m src.cli.compile examples/calculator/spec.py --claude-command "claudebo
 
 ### Containerization
 - Compilation and test running should happen in a docker container.
+
+### Decompiling
+- Calling claude on an existing project to make a spec.
 
 ### Other Future Features
 - Caching: Avoid recompiling unchanged specs
