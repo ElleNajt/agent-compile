@@ -4,7 +4,7 @@ A system for compiling structured prompts into executable code.
 
 ## Concept
 
-Instead of chatting back-and-forth with an AI agent, you define what you want as a structured specification (`Module`), and the system compiles it to working code.
+Instead of chatting back-and-forth with an AI agent, you define what you want as a structured specification (`Module`), and the agent compiles it to working code.
 
 ## Key Components
 
@@ -15,7 +15,7 @@ A `Module` is a minimal high-level specification of what code should do:
 - **dependencies**: Other modules this depends on
 - **tests**: Natural language descriptions of expected behavior
 
-The design is intentionally minimal. The strict ambiguity checker will force you to make the purpose and tests specific enough that compilation is unambiguous.
+The "compilers" ambiguity checker will force you to make the purpose and tests specific enough that compilation is unambiguous.
 
 ### Two-Pass Compilation
 
@@ -56,8 +56,6 @@ Each example includes:
 - `README.md` - Example documentation
 - `compiled_src/` - Generated code (after compilation)
 
-**Progression**: calculator (single function) → data_processor (function pipeline) → ml_classifier (complete systems)
-
 ### Programmatic API
 
 ```python
@@ -84,10 +82,13 @@ elif result.status == "compiled":
 
 ### Workflow
 
-1. Start with minimal spec (name + purpose)
+1. Write a minimal spec (name + purpose) in a `.py` file
 2. Run compiler → identifies ambiguities
-3. Refine purpose and add tests until unambiguous
-4. Get working code in `compiled_src/`
+3. Work with Claude Code to refine the spec - add tests, clarify purpose
+4. Re-run compiler → repeat until no ambiguities
+5. Get working, tested code in `compiled_src/`
+
+The key insight: You collaborate with Claude Code on the **spec**, then the compiler generates **code** from that spec.
 
 ## Design Principles
 
