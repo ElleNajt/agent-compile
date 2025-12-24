@@ -42,17 +42,36 @@ def compile_file(filepath: Path, output_dir: Path, force: bool = False):
     # Create compiler with cwd set to output directory
     compiler = LLMCompiler(cwd=output_dir)
 
-    for module in modules:
-        print(f"\nCompiling {module.name}...")
-        result = compiler.compile(module, force=force)
+    # Phase 1: Check ALL modules for ambiguities first
+    if not force:
+        print("\nPhase 1: Checking all modules for ambiguities...")
+        all_ambiguities = {}
 
-        if result.status == "ambiguous":
-            print(f"❌ {module.name} has ambiguities:\n")
-            for amb in result.ambiguities:
-                print(f"  {amb}\n")
+        for module in modules:
+            print(f"  Checking {module.name}...")
+            ambiguities = compiler.ambiguity_checker.check(module)
+            if ambiguities:
+                all_ambiguities[module.name] = ambiguities
+
+        # If any module has ambiguities, report all and abort
+        if all_ambiguities:
+            print(f"\n❌ Found ambiguities in {len(all_ambiguities)} module(s):\n")
+            for module_name, ambiguities in all_ambiguities.items():
+                print(f"Module: {module_name}")
+                for amb in ambiguities:
+                    print(f"  {amb}\n")
             return 1
 
-        elif result.status == "error":
+        print("✅ All modules passed ambiguity checks\n")
+
+    # Phase 2: Compile all modules (now we know they're all unambiguous)
+    print("Phase 2: Compiling modules...")
+    for module in modules:
+        print(f"\nCompiling {module.name}...")
+        # Skip ambiguity check since we already did it
+        result = compiler.compile(module, force=True)
+
+        if result.status == "error":
             print(f"❌ {module.name} compilation error: {result.error}")
             return 1
 
