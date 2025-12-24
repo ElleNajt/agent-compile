@@ -6,7 +6,8 @@ import importlib.util
 import sys
 from pathlib import Path
 
-from src.core import CompilationResult, LLMCompiler
+from src.core import CompilationResult, LLMCompiler, Ambiguity
+from src.core.cache import AmbiguityCache
 
 
 def load_modules_from_file(filepath: Path) -> list:
@@ -45,14 +46,26 @@ def compile_file(filepath: Path, output_dir: Path, force: bool = False):
     # Phase 1: Check ALL modules for ambiguities first
     if not force:
         print("\nPhase 1: Checking all modules for ambiguities...")
+        cache = AmbiguityCache(output_dir)
         all_ambiguities = {}
-
+        
         for module in modules:
-            print(f"  Checking {module.name}...")
-            ambiguities = compiler.ambiguity_checker.check(module)
-            if ambiguities:
-                all_ambiguities[module.name] = ambiguities
-
+            # Check cache first
+            cached = cache.get(module)
+            if cached is not None:
+                print(f"  Checking {module.name}... (cached)")
+                # Reconstruct Ambiguity objects from cached dicts
+                if cached:  # If there were ambiguities
+                    ambiguities = [Ambiguity(**amb_dict) for amb_dict in cached]
+                    all_ambiguities[module.name] = ambiguities
+            else:
+                print(f"  Checking {module.name}...")
+                ambiguities = compiler.ambiguity_checker.check(module)
+                # Cache the result
+                cache.set(module, ambiguities)
+                if ambiguities:
+                    all_ambiguities[module.name] = ambiguities
+        
         # If any module has ambiguities, report all and abort
         if all_ambiguities:
             print(f"\n❌ Found ambiguities in {len(all_ambiguities)} module(s):\n")
@@ -61,7 +74,7 @@ def compile_file(filepath: Path, output_dir: Path, force: bool = False):
                 for amb in ambiguities:
                     print(f"  {amb}\n")
             return 1
-
+        
         print("✅ All modules passed ambiguity checks\n")
 
     # Phase 2: Compile all modules (now we know they're all unambiguous)
@@ -81,9 +94,7 @@ def compile_file(filepath: Path, output_dir: Path, force: bool = False):
             if output_file.exists():
                 print(f"✅ {module.name} compiled successfully → {output_file}")
             else:
-                print(
-                    f"⚠️  {module.name} compilation finished but file not found at {output_file}"
-                )
+                print(f"⚠️  {module.name} compilation finished but file not found at {output_file}")
 
     return 0
 

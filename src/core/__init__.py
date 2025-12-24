@@ -17,3 +17,8 @@ __all__ = [
     'Agent',
     'ClaudeAgent'
 ]
+
+# Cache
+from .cache import AmbiguityCache
+
+__all__.extend(['AmbiguityCache'])
