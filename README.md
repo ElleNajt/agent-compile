@@ -17,12 +17,13 @@ A `Module` is a minimal high-level specification of what code should do:
 
 The design is intentionally minimal. The strict ambiguity checker will force you to make the purpose and tests specific enough that compilation is unambiguous.
 
-**Note**: Tests are flexible natural language - not rigid input/output pairs. Describe behavior however makes sense for your module.
-
 ### Two-Pass Compilation
 
 1. **Ambiguity Check**: Strictly analyzes the specification for any unclear aspects
 2. **Code Generation**: Compiles the spec to executable code (if no ambiguities)
+   - Generates implementation + pytest tests
+   - Runs tests and iteratively fixes failures until all tests pass
+   - Only succeeds if tests pass ✓
 
 ## Usage
 
@@ -97,7 +98,7 @@ elif result.status == "compiled":
 
 ## Future Work
 
-### Module Freezing (Optional Feature)
+### Module Freezing 
 - Freeze modules at specific git hashes
 - A frozen module specifies:
   - Git commit hash when it was finalized
@@ -106,6 +107,9 @@ elif result.status == "compiled":
   - If compilation would modify frozen files → throw error
   - Prevents accidental modification of "done" code
   - Ties frozen state to version control instead of internal checksums
+
+### Containerization
+- Compilation and test running should happen in a docker container.
 
 ### Other Future Features
 - Caching: Avoid recompiling unchanged specs
