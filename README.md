@@ -74,30 +74,6 @@ Each example includes:
 - `README.md` - Example documentation
 - `compiled_src/` - Generated code (after compilation)
 
-### Programmatic API
-
-```python
-from src.core import Module, LLMCompiler
-
-calculator = Module(
-    name="calculator",
-    purpose="Performs basic arithmetic operations",
-    tests=[
-        "Addition: calculate(10, 5, 'add') returns 15",
-        "Division by zero raises ZeroDivisionError"
-    ]
-)
-
-compiler = LLMCompiler()
-result = compiler.compile(calculator)
-
-if result.status == "ambiguous":
-    for amb in result.ambiguities:
-        print(amb)
-elif result.status == "compiled":
-    print(result.code)
-```
-
 ### Workflow
 
 **Forward (Spec → Code):**
