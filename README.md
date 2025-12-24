@@ -30,9 +30,10 @@ The "compilers" ambiguity checker will force you to make the purpose and tests s
 1. **Ambiguity Check**: Strictly analyzes the specification for any unclear aspects
 2. **Dependency Resolution**: Recursively compiles all dependencies first (topological order)
    - Dependencies must compile successfully before dependent modules
-   - Dependency code is passed to the next step for import/usage
+   - Each dependency is fully compiled (files written to disk)
 3. **Code Generation**: Compiles the spec to executable code (if no ambiguities)
-   - Generates implementation + pytest tests
+   - Claude receives dependency code in the prompt (to know what's available for import)
+   - Generates implementation + pytest tests (writes files directly to disk)
    - Runs tests and iteratively fixes failures until all tests pass
    - Only succeeds if tests pass ✓
 
