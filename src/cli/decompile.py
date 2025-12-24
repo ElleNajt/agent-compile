@@ -29,6 +29,7 @@ def decompile_directory(
     except Exception as e:
         print(f"❌ Decompilation failed: {e}")
         import traceback
+
         traceback.print_exc()
         return 1
 

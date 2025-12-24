@@ -52,9 +52,10 @@ class Decompiler:
             raise ValueError(f"No code files found in {code_dir}")
 
         # Initial decompilation - Claude writes spec file directly
-        print(f"  Generating initial spec...")
+        print(f"  Generating initial spec...", flush=True)
         prompt = self._build_initial_decompile_prompt(code_files, output_file)
         self.agent.query(prompt, cwd=code_dir.parent)
+        print(f"  Checking generated spec for ambiguities...", flush=True)
 
         # Iteratively refine until unambiguous
         for iteration in range(max_iterations):
@@ -63,6 +64,8 @@ class Decompiler:
 
             if not modules:
                 raise ValueError(f"No modules found in generated spec: {output_file}")
+
+            print(f"  Loaded {len(modules)} module(s), checking each...", flush=True)
 
             # Check each module for ambiguities
             all_ambiguities = {}
@@ -73,12 +76,13 @@ class Decompiler:
 
             # If no ambiguities, we're done!
             if not all_ambiguities:
-                print(f"  ✅ Spec passes ambiguity checks")
+                print(f"  ✅ Spec passes ambiguity checks!", flush=True)
                 return output_file.read_text()
 
             # Refine the spec based on ambiguities
             print(
-                f"  Iteration {iteration + 1}: Found ambiguities in {len(all_ambiguities)} module(s), refining..."
+                f"  Iteration {iteration + 1}: Found ambiguities in {len(all_ambiguities)} module(s), refining...",
+                flush=True,
             )
             prompt = self._build_refinement_prompt(
                 output_file, all_ambiguities, code_files
@@ -87,7 +91,8 @@ class Decompiler:
 
         # After max iterations, return what we have
         print(
-            f"  ⚠️  Warning: Spec still has ambiguities after {max_iterations} iterations"
+            f"  ⚠️  Warning: Spec still has ambiguities after {max_iterations} iterations",
+            flush=True,
         )
         return output_file.read_text()
 
