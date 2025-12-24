@@ -20,17 +20,16 @@ def decompile_directory(
     decompiler = Decompiler(agent=agent)
 
     try:
-        # Decompile code to spec
-        spec_code = decompiler.decompile(code_dir)
-
-        # Write spec to file
-        output_file.write_text(spec_code)
+        # Decompile code to spec (iterates until unambiguous)
+        decompiler.decompile(code_dir, output_file)
 
         print(f"✅ Generated spec file → {output_file}")
         return 0
 
     except Exception as e:
         print(f"❌ Decompilation failed: {e}")
+        import traceback
+        traceback.print_exc()
         return 1
 
 
