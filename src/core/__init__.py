@@ -4,6 +4,7 @@ from .agent import Agent
 from .ambiguity import Ambiguity, AmbiguityChecker
 from .claude_agent import ClaudeAgent
 from .compiler import CompilationError, CompilationResult, LLMCompiler
+from .decompiler import Decompiler
 from .module import Module
 
 __all__ = [
@@ -15,6 +16,7 @@ __all__ = [
     "CompilationError",
     "Agent",
     "ClaudeAgent",
+    "Decompiler",
 ]
 
 # Cache
