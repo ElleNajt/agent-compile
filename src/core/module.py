@@ -17,6 +17,7 @@ class Module:
     purpose: str  # High-level intent in natural language
     dependencies: list["Module"] = field(default_factory=list)
     tests: list[str] = field(default_factory=list)  # Natural language test descriptions
+    language: str = "python"  # Target language (python, rust, javascript, etc.)
 
     # Freezing metadata (for future use - see agent-compile-1d6)
     frozen: bool = False

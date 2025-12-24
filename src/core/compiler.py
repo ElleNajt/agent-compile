@@ -8,6 +8,7 @@ from typing import Literal
 from .agent import Agent
 from .ambiguity import Ambiguity, AmbiguityChecker
 from .claude_agent import ClaudeAgent
+from .language_prompts import get_language_instructions
 from .module import Module
 
 
@@ -197,6 +198,9 @@ End of compilation log
             for dep_name, code in dep_code.items():
                 deps_str += f"\n--- Dependency: {dep_name} ---\n{code}\n"
 
+        # Get language-specific instructions
+        language_instructions = get_language_instructions(module.language)
+
         prompt = f"""You are tasked with implementing a {target_language} module.
 
 Module Specification:
@@ -206,13 +210,15 @@ Purpose: {module.purpose}{tests_str}{deps_str}
 ---
 
 Your task:
-1. Write the implementation to {module.name}.py
-2. Write pytest tests to test_{module.name}.py that verify ALL the test cases above
-3. Run the tests with pytest until they all pass
-4. FAIL FAST: Let errors surface immediately. Do NOT add try-except blocks or default values unless explicitly specified in the purpose
-5. Use clear variable names and type hints
+1. Follow the language-specific instructions below for environment setup and tooling
+2. Write the implementation
+3. Write tests that verify ALL the test cases above
+4. Run the tests iteratively until they all pass
+5. FAIL FAST: Let errors surface immediately. Do NOT add try-except blocks or default values unless explicitly specified in the purpose
 
 Work iteratively - write code, run tests, fix failures, repeat until all tests pass.
+
+{language_instructions}
 """
 
         return prompt
