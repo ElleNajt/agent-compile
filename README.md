@@ -22,8 +22,14 @@ A `Module` is a python dataclass that is a minimal high-level specification of w
 - **purpose**: High-level intent in natural language (be specific!)
 - **dependencies**: Other modules this depends on
 - **tests**: Natural language descriptions of expected behavior
+- **language**: Target language (default: "python", also supports "rust", "javascript", etc.)
 
 The "compilers" ambiguity checker will force you to make the purpose and tests specific enough that compilation is unambiguous.
+
+**Language-specific tooling**: The compiler uses language-specific instructions for environment setup:
+- **Python**: Uses `uv venv` for isolated environments and `uv pip install` for dependencies
+- **Rust**: Uses `cargo` for building and testing
+- **JavaScript**: Uses `npm` for package management
 
 ### Three-Pass Compilation
 
