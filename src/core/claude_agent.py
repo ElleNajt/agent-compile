@@ -17,7 +17,8 @@ class ClaudeAgent(Agent):
 
         Args:
             command: Command to run (default: "claude")
-                    Can include arguments: "claudebox -p" for containerized execution
+                    Can be "claudebox" for containerized execution
+                    The -p flag is automatically added
         """
         self.command = command
 
@@ -35,13 +36,17 @@ class ClaudeAgent(Agent):
         Returns:
             Claude's final response
         """
-        # Parse command string into list (handles arguments like "claudebox -p")
+        # Parse command string into list (handles arguments like "claudebox")
         cmd_list = shlex.split(self.command)
 
-        # Run claude/claudebox with the prompt via stdin
+        # Always add -p flag and pass prompt as argument
+        # This works for both `claude -p "prompt"` and `claudebox -p "prompt"`
+        # without requiring TTY
+        cmd_list.extend(["-p", prompt])
+
+        # Run claude/claudebox with prompt as command-line argument
         result = subprocess.run(
             cmd_list,
-            input=prompt,
             cwd=cwd,
             capture_output=True,
             text=True,
