@@ -9,11 +9,27 @@ Use agent-compile when:
 - You want the implementation to be reproducible from a clear specification
 - You want to collaborate on design (via specs) rather than implementation details
 
+## Running in a container
+
+**Important**: When running Claude Code, start it in a container for isolation:
+
+```bash
+# Start Claude in container
+claudebox
+
+# Inside the container, agent-compile is already available
+```
+
+Benefits:
+- Isolated environment with credential separation
+- Latest version from GitHub (via uvx)
+- No nested container complexity
+
 ## Workflow
 
 1. **Create a spec file** (e.g., `spec.py`):
    ```python
-   from src.core import Module
+   from agent_compile.core import Module
    
    my_module = Module(
        name="my_module",
@@ -68,7 +84,6 @@ This generates a spec from your code that you can refine and re-compile.
 - `agent-compile spec.py --output-dir compiled_src/` - Compile spec to code
 - `agent-decompile src/ --output spec.py` - Decompile code to spec
 - `agent-compile spec.py --force` - Skip ambiguity checking
-- `agent-compile spec.py --claude-command claudebox` - Use containerized Claude
 
 ## Examples
 

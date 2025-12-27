@@ -42,10 +42,25 @@ The "compilers" ambiguity checker will force you to make the purpose and tests s
 
 ## Usage
 
+**Recommended**: Run Claude in a container for isolation and security:
+
+```bash
+# Start Claude in container
+claudebox
+
+# Inside the container, run agent-compile:
+agent-compile spec.py --output-dir compiled_src/
+```
+
+This approach provides:
+- Isolated environment with credential separation
+- Latest version from GitHub (via uvx)
+- No nested container complexity
+
 ### Compile: Spec → Code
 
 ```bash
-python -m src.cli.compile examples/calculator/spec.py --output-dir examples/calculator/compiled_src
+agent-compile examples/calculator/spec.py --output-dir examples/calculator/compiled_src
 ```
 
 The CLI will:
@@ -57,12 +72,11 @@ The CLI will:
 Options:
 - `--output-dir DIR`: Custom output directory (default: `compiled_src/` next to spec file)
 - `--force`: Skip ambiguity checking
-- `--claude-command CMD`: Command to run Claude (default: `claude`, can use `claudebox` for containerized execution)
 
 ### Decompile: Code → Spec
 
 ```bash
-python -m src.cli.decompile examples/calculator/compiled_src --output spec.py
+agent-decompile examples/calculator/compiled_src --output spec.py
 ```
 
 The decompile CLI will:
@@ -72,7 +86,6 @@ The decompile CLI will:
 
 Options:
 - `--output FILE`: Output spec file (default: `spec.py` in code directory)
-- `--claude-command CMD`: Command to run Claude (default: `claude`)
 
 **Use case**: Extract specifications from existing codebases to refine or re-compile them
 
@@ -122,22 +135,6 @@ Each example includes:
 4. Re-compile to update implementation
 
 The key insight: You collaborate with Claude Code on the **spec**, then the compiler generates **code** from that spec. The decompiler lets you extract specs from existing code.
-
-## Containerization
-
-For security and isolation, you can run compilation in a Docker container using a containerized Claude command:
-
-```bash
-# Using claudebox (or any other containerized Claude command)
-python -m src.cli.compile examples/calculator/spec.py --claude-command "claudebox"
-```
-
-**Benefits:**
-- Isolation: Code generation and testing happen in a sandboxed environment
-- Security: Prevents generated code from accessing your host system
-- Reproducibility: Consistent environment for all compilations
-
-**Note:** The `-p` flag is automatically added by agent-compile, so just specify the base command (e.g., `claudebox` not `claudebox -p`).
 
 ## Design Principles
 
