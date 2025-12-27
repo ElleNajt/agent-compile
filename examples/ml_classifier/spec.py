@@ -4,7 +4,7 @@ This demonstrates how modules can describe entire systems, not just low-level fu
 Each module is a complete subsystem with its own behavior and tests.
 """
 
-from src.core import Module
+from agent_compile.core import Module
 
 # High-level system: Text classifier
 text_classifier = Module(

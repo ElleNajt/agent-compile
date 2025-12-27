@@ -1,6 +1,6 @@
 """Example: Data processing pipeline with multiple dependent modules."""
 
-from src.core import Module
+from agent_compile.core import Module
 
 # Module 1: CSV reader
 csv_reader = Module(

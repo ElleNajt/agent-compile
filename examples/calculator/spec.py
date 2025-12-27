@@ -1,6 +1,6 @@
 """Example module specification for agent-compile."""
 
-from src.core import Module
+from agent_compile.core import Module
 
 # Simple calculator module
 calculator = Module(

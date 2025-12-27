@@ -16,19 +16,19 @@ authors = [
 dependencies = []
 
 [project.scripts]
-agent-compile = "src.cli.compile:main"
-agent-decompile = "src.cli.decompile:main"
+agent-compile = "agent_compile.cli.compile:main"
+agent-decompile = "agent_compile.cli.decompile:main"
 
 [project.urls]
 Homepage = "https://github.com/ElleNajt/agent-compile"
 Repository = "https://github.com/ElleNajt/agent-compile"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src"]
+packages = ["agent_compile"]
 
 [tool.hatch.build.targets.sdist]
 include = [
-    "/src",
+    "/agent_compile",
     "/README.md",
     "/pyproject.toml",
 ]

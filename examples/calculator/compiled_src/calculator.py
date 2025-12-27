@@ -1,7 +1,7 @@
-"""Calculator module for basic arithmetic operations."""
+"""A calculator that performs basic arithmetic operations."""
 
 
-def calculator(a: float, b: float, operation: str) -> dict[str, float]:
+def calculate(a: float, b: float, operation: str) -> dict[str, float]:
     """
     Perform basic arithmetic operations on two numbers.
 
@@ -14,8 +14,8 @@ def calculator(a: float, b: float, operation: str) -> dict[str, float]:
         Dictionary with key 'result' containing the float result
 
     Raises:
-        ValueError: If operation is not one of the valid operations
-        ZeroDivisionError: If attempting to divide by zero
+        ValueError: If operation is not valid
+        ZeroDivisionError: If dividing by zero
     """
     if operation == 'add':
         result = a + b
