@@ -165,7 +165,7 @@ IMPORTANT - Avoid Ambiguities:
 
 Output format (write to {output_file}):
 ```python
-from src.core import Module
+from agent_compile.core import Module
 
 # Module definitions here
 module_name = Module(

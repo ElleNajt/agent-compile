@@ -5,8 +5,8 @@ import argparse
 import sys
 from pathlib import Path
 
-from src.core import ClaudeAgent
-from src.core.decompiler import Decompiler
+from agent_compile.core import ClaudeAgent
+from agent_compile.core.decompiler import Decompiler
 
 
 def decompile_directory(

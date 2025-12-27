@@ -1,4 +1,4 @@
-from src.core import Module
+from agent_compile.core import Module
 
 # Core data structure
 module_spec = Module(

@@ -6,8 +6,8 @@ import importlib.util
 import sys
 from pathlib import Path
 
-from src.core import Ambiguity, CompilationResult, LLMCompiler
-from src.core.cache import AmbiguityCache
+from agent_compile.core import Ambiguity, CompilationResult, LLMCompiler
+from agent_compile.core.cache import AmbiguityCache
 
 
 def load_modules_from_file(filepath: Path) -> list:
@@ -17,7 +17,7 @@ def load_modules_from_file(filepath: Path) -> list:
     spec.loader.exec_module(module)
 
     # Find all Module instances in the file
-    from src.core import Module
+    from agent_compile.core import Module
 
     modules = []
     for name in dir(module):
@@ -46,7 +46,7 @@ def compile_file(
     print(f"Found {len(modules)} module(s): {', '.join(m.name for m in modules)}")
 
     # Create compiler with cwd set to output directory
-    from src.core import ClaudeAgent
+    from agent_compile.core import ClaudeAgent
 
     agent = ClaudeAgent(command=claude_command)
     compiler = LLMCompiler(agent=agent, cwd=output_dir)
